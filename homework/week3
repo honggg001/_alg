@@ -1,0 +1,84 @@
+import itertools
+from typing import Dict, List, Optional, Set, Tuple
+
+
+def solve_sat_truth_table(
+    clauses: List[List[int]], print_table: bool = True
+) -> Tuple[bool, Optional[Dict[int, bool]]]:
+    """使用真值表列舉法求解 CNF-SAT 問題
+
+    :param clauses: List of clauses，每個整數代表一個變數 (例如: 1 代表 x1, -2 代表 NOT x2)
+    :param print_table: 是否輸出完整的真值表
+    :return: (is_satisfiable, satisfying_assignment)
+    """
+    # 1. 搜集所有相異變數並排序
+    variables: List[int] = sorted(
+        list({abs(literal) for clause in clauses for literal in clause})
+    )
+    n = len(variables)
+
+    satisfying_assignment = None
+    all_satisfying_assignments = []
+
+    # 表頭排版
+    if print_table:
+        header_vars = " | ".join(f"x{v}" for v in variables)
+        print(f"| {header_vars} | Result |")
+        print("|" + "-" * (len(header_vars) + 2) + "|--------|")
+
+    # 2. 列舉所有 2^n 種可能指派
+    for assignment_values in itertools.product([False, True], repeat=n):
+        # 建立變數到真值的映射表
+        assignment: Dict[int, bool] = dict(zip(variables, assignment_values))
+
+        # 3. 評估公式是否滿足
+        formula_eval = True
+        for clause in clauses:
+            # 每個 Clause 是由 OR 連接，只要其中一個文字為 True 即可
+            clause_eval = any(
+                assignment[abs(lit)] if lit > 0 else not assignment[abs(lit)]
+                for lit in clause
+            )
+            if not clause_eval:
+                formula_eval = False
+                break
+
+        if formula_eval:
+            all_satisfying_assignments.append(assignment)
+            if satisfying_assignment is None:
+                satisfying_assignment = assignment
+
+        # 印出該行真值狀態 (0/1 表示 False/True)
+        if print_table:
+            row_vars = " |  ".join("1" if assignment[v] else "0" for v in variables)
+            res_str = "  1 (SAT) " if formula_eval else "    0     "
+            print(f"|  {row_vars} |{res_str}|")
+
+    is_sat = len(all_satisfying_assignments) > 0
+    return is_sat, satisfying_assignment
+
+
+# ==================== 測試範例 ====================
+if __name__ == "__main__":
+    # 測試命題：
+    # (x1 OR x2) AND (NOT x1 OR x3) AND (NOT x2 OR NOT x3)
+    # DIMACS CNF 表示法:
+    # 1 代表 x1, -1 代表 NOT x1
+    formula = [
+        [1, 2],  # (x1 ∨ x2)
+        [-1, 3],  # (¬x1 ∨ x3)
+        [-2, -3],  # (¬x2 ∨ ¬x3)
+    ]
+
+    print("=== 開始求解 SAT 真值表 ===")
+    is_satisfiable, model = solve_sat_truth_table(formula, print_table=True)
+
+    print("\n=== 結論 ===")
+    if is_satisfiable:
+        print("狀態: SATISFIABLE (可滿足)")
+        formatted_model = ", ".join(
+            f"x{k}={'T' if v else 'F'}" for k, v in model.items()
+        )
+        print(f"其中一組可行解: {{{formatted_model}}}")
+    else:
+        print("狀態: UNSATISFIABLE (不可滿足)")
