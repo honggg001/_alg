@@ -60,7 +60,7 @@ def solve_sat_truth_table(
 
 # ==================== 測試範例 ====================
 if __name__ == "__main__":
-    # 測試命題：
+# 測試命題：
     # (x1 OR x2) AND (NOT x1 OR x3) AND (NOT x2 OR NOT x3)
     # DIMACS CNF 表示法:
     # 1 代表 x1, -1 代表 NOT x1
