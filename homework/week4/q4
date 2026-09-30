@@ -1,0 +1,54 @@
+def simulate_cooling(t_init: float, t_env: float, alpha: float, tol: float = 0.01, max_iter: int = 100):
+    """
+    透過牛頓冷卻離散迭代計算水溫變化
+    
+    參數:
+    - t_init: 初始水溫 (°C)
+    - t_env: 環境溫度 (°C)
+    - alpha: 每個迭代週期的冷卻衰減率 (0 < alpha < 1)
+    - tol: 停止條件：當前溫度與環境溫度的容許差值 (°C)
+    - max_iter: 最大迭代步數
+    """
+    temp_history = [t_init]
+    current_temp = t_init
+
+    print(f"初始水溫: {current_temp:.2f}°C, 環境溫度: {t_env:.2f}°C, 衰減率: {alpha}")
+    print("-" * 45)
+    print(f"{'步數 (k)':<10}{'當前溫度 T_k (°C)':<20}{'與環境溫差 (°C)':<15}")
+    print("-" * 45)
+    print(f"{0:<10}{current_temp:<20.4f}{abs(current_temp - t_env):<15.4f}")
+
+    for step in range(1, max_iter + 1):
+        # 迭代更新式: T_{k+1} = T_k - alpha * (T_k - T_env)
+        next_temp = current_temp - alpha * (current_temp - t_env)
+        temp_history.append(next_temp)
+        
+        diff = abs(next_temp - t_env)
+        print(f"{step:<10}{next_temp:<20.4f}{diff:<15.4f}")
+
+        # 終止條件：已足夠接近環境溫度
+        if diff < tol:
+            print("-" * 45)
+            print(f"達成收斂！共進行了 {step} 次迭代，最終水溫為 {next_temp:.4f}°C。")
+            return temp_history
+
+        current_temp = next_temp
+
+    print("-" * 45)
+    print(f"達到最大迭代次數 ({max_iter})，未完全收斂至容許誤差內。")
+    return temp_history
+
+
+if __name__ == "__main__":
+    # 設定情境：剛煮沸的開水 (95°C) 放入冷氣房水槽 (25°C)
+    t_initial = 95.0
+    t_ambient = 25.0
+    decay_rate = 0.15  # 每個時間步長帶走 15% 的溫差
+    tolerance = 0.05    # 當溫差小於 0.05°C 時停止
+
+    history = simulate_cooling(
+        t_init=t_initial,
+        t_env=t_ambient,
+        alpha=decay_rate,
+        tol=tolerance
+    )
