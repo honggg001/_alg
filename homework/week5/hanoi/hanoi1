@@ -1,0 +1,17 @@
+def hanoi(n, source, auxiliary, target):
+    if n == 1:
+        print(f"移動圓盤 1：{source} -> {target}")
+        return
+
+    # 第一步：把上面的 n-1 個搬到輔助柱
+    hanoi(n - 1, source, target, auxiliary)
+
+    # 第二步：把最大的第 n 個搬到目標柱
+    print(f"移動圓盤 {n}：{source} -> {target}")
+
+    # 第三步：把 n-1 個從輔助柱搬到目標柱
+    hanoi(n - 1, auxiliary, source, target)
+
+
+n = 3
+hanoi(n, "A", "B", "C")

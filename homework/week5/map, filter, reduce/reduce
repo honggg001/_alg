@@ -1,0 +1,12 @@
+def my_reduce(func, data, initial):
+
+    if data == []:
+        return initial
+
+    new_value = func(initial, data[0])
+
+    return my_reduce(
+        func,
+        data[1:],
+        new_value
+    )

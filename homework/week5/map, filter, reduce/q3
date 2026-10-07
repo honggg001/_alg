@@ -1,0 +1,112 @@
+# ========================================
+# 自製 map
+# ========================================
+
+def my_map(func, data):
+    if data == []:
+        return []
+
+    return [func(data[0])] + my_map(func, data[1:])
+
+
+# ========================================
+# 自製 filter
+# ========================================
+
+def my_filter(func, data):
+    if data == []:
+        return []
+
+    if func(data[0]):
+        return [data[0]] + my_filter(func, data[1:])
+
+    return my_filter(func, data[1:])
+
+
+# ========================================
+# 自製 reduce
+# ========================================
+
+def my_reduce(func, data, initial):
+    if data == []:
+        return initial
+
+    new_value = func(initial, data[0])
+
+    return my_reduce(
+        func,
+        data[1:],
+        new_value
+    )
+
+
+# ========================================
+# Bubble Sort 一輪
+# ========================================
+
+def bubble_pass(data):
+
+    if len(data) <= 1:
+        return data
+
+    def compare(state, x):
+
+        result, current = state
+
+        if current <= x:
+            return (result + [current], x)
+
+        return (result + [x], current)
+
+    result, last = my_reduce(
+        compare,
+        data[1:],
+        ([], data[0])
+    )
+
+    return result + [last]
+
+
+# ========================================
+# Bubble Sort
+# ========================================
+
+def bubble_sort(data):
+
+    if len(data) <= 1:
+        return data
+
+    passed = bubble_pass(data)
+
+    return bubble_sort(passed[:-1]) + [passed[-1]]
+
+
+# ========================================
+# 測試
+# ========================================
+
+numbers = [5, 3, 8, 4, 2]
+
+print("原始資料：")
+print(numbers)
+
+print("排序結果：")
+print(bubble_sort(numbers))
+
+
+print("\n測試 my_map：")
+print(
+    my_map(lambda x: x * 2, numbers)
+)
+
+
+print("\n測試 my_filter：")
+print(
+    my_filter(lambda x: x % 2 == 0, numbers)
+)
+
+
+print("\n測試 my_reduce：")
+print(
+    my_reduce(lambda a, b: a + b, numbers, 0)
+)

@@ -1,0 +1,52 @@
+def move_between(rods, a, b):
+    if not rods[a]:
+        disk = rods[b].pop()
+        rods[a].append(disk)
+        print(f"移動圓盤 {disk}：{b} -> {a}")
+
+    elif not rods[b]:
+        disk = rods[a].pop()
+        rods[b].append(disk)
+        print(f"移動圓盤 {disk}：{a} -> {b}")
+
+    elif rods[a][-1] < rods[b][-1]:
+        disk = rods[a].pop()
+        rods[b].append(disk)
+        print(f"移動圓盤 {disk}：{a} -> {b}")
+
+    else:
+        disk = rods[b].pop()
+        rods[a].append(disk)
+        print(f"移動圓盤 {disk}：{b} -> {a}")
+
+
+def hanoi_non_recursive(n):
+    rods = {
+        "A": list(range(n, 0, -1)),
+        "B": [],
+        "C": []
+    }
+
+    source = "A"
+    auxiliary = "B"
+    target = "C"
+
+    # 偶數時交換 B、C
+    if n % 2 == 0:
+        auxiliary, target = target, auxiliary
+
+    total_moves = 2 ** n - 1
+
+    for move in range(1, total_moves + 1):
+
+        if move % 3 == 1:
+            move_between(rods, source, target)
+
+        elif move % 3 == 2:
+            move_between(rods, source, auxiliary)
+
+        else:
+            move_between(rods, auxiliary, target)
+
+
+hanoi_non_recursive(3)

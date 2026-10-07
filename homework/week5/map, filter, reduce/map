@@ -1,0 +1,6 @@
+def my_map(func, data):
+
+    if data == []:
+        return []
+
+    return [func(data[0])] + my_map(func, data[1:])

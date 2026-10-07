@@ -1,0 +1,9 @@
+def my_filter(func, data):
+
+    if data == []:
+        return []
+
+    if func(data[0]):
+        return [data[0]] + my_filter(func, data[1:])
+
+    return my_filter(func, data[1:])

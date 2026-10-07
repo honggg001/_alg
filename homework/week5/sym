@@ -1,0 +1,61 @@
+import sympy as sp
+
+x = sp.symbols("x")
+
+
+def sym_diff(expr):
+
+    # 情況 1：常數
+    if expr.is_Number:
+        return sp.Integer(0)
+
+    # 情況 2：x
+    if expr == x:
+        return sp.Integer(1)
+
+    # 情況 3：加法
+    if expr.is_Add:
+        return sp.Add(*(sym_diff(arg) for arg in expr.args))
+
+    # 情況 4：乘法
+    if expr.is_Mul:
+        terms = []
+
+        for i, factor in enumerate(expr.args):
+
+            new_factors = list(expr.args)
+
+            new_factors[i] = sym_diff(factor)
+
+            terms.append(sp.Mul(*new_factors))
+
+        return sp.Add(*terms)
+
+    # 情況 5：次方 u^n
+    if expr.is_Pow:
+
+        base, exponent = expr.args
+
+        if exponent.is_Number:
+
+            return (
+                exponent
+                * base ** (exponent - 1)
+                * sym_diff(base)
+            )
+
+    # 其他函數交給 SymPy
+    if expr.is_Function:
+        return sp.diff(expr, x)
+
+    raise NotImplementedError(
+        f"目前還不支援這個運算式：{expr}"
+    )
+
+
+expr = x**3 + 2*x**2 + 5*x + 7
+
+answer = sp.simplify(sym_diff(expr))
+
+print("原函數：", expr)
+print("微分：", answer)
