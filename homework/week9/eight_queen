@@ -1,0 +1,52 @@
+
+# eight_queens.py
+# 第3題：八皇后問題（DFS）
+
+N = 8
+
+solutions = []
+board = [-1] * N
+
+
+def is_safe(row, col):
+    for i in range(row):
+        if board[i] == col:
+            return False
+
+        if abs(board[i] - col) == abs(i - row):
+            return False
+
+    return True
+
+
+def dfs(row):
+    if row == N:
+        solutions.append(board.copy())
+        return
+
+    for col in range(N):
+        if is_safe(row, col):
+            board[row] = col
+            dfs(row + 1)
+            board[row] = -1
+
+
+def print_board(solution):
+    for row in range(N):
+        for col in range(N):
+            if solution[row] == col:
+                print("Q", end=" ")
+            else:
+                print(".", end=" ")
+        print()
+
+
+if __name__ == "__main__":
+    dfs(0)
+
+    print("八皇后問題")
+    print("總解答數量：", len(solutions))
+
+    for i, solution in enumerate(solutions):
+        print(f"\n第 {i + 1} 組解答")
+        print_board(solution)

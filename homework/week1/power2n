@@ -1,0 +1,64 @@
+
+import time
+from functools import lru_cache
+
+# 方法 1：直接計算
+def power2n_1(n):
+    return 2 ** n
+
+
+# 方法 2a：遞迴（重複呼叫兩次）
+def power2n_2a(n):
+    if n == 0:
+        return 1
+    return power2n_2a(n - 1) + power2n_2a(n - 1)
+
+
+# 方法 2b：遞迴（只呼叫一次）
+def power2n_2b(n):
+    if n == 0:
+        return 1
+    return 2 * power2n_2b(n - 1)
+
+
+# 方法 3：遞迴 + 查表
+@lru_cache(maxsize=None)
+def power2n_3(n):
+    if n == 0:
+        return 1
+    return power2n_3(n - 1) + power2n_3(n - 1)
+
+
+# 測試函式
+def test_function(name, func, n):
+    start = time.perf_counter()
+
+    result = func(n)
+
+    end = time.perf_counter()
+    elapsed = end - start
+
+    print(f"{name}")
+    print(f"n = {n}")
+    print(f"結果 = {result}")
+    print(f"執行時間 = {elapsed:.10f} 秒")
+    print("-" * 50)
+
+
+if __name__ == "__main__":
+
+    n = 100
+
+    print("===== 2 的 n 次方效率測試 =====")
+
+    test_function("方法 1：直接計算", power2n_1, n)
+
+    # 方法 2a 在 n=100 時非常慢
+    # 因此先使用 n=20 測試
+    test_function("方法 2a：雙重遞迴", power2n_2a, 20)
+
+    test_function("方法 2b：單次遞迴", power2n_2b, n)
+
+    # 清除快取，確保公平測試
+    power2n_3.cache_clear()
+    test_function("方法 3：遞迴 + 查表", power2n_3, n)
